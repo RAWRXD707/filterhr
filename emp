@@ -1,0 +1,39 @@
+from django.db.models import F, Count
+from employees.models import Employee
+
+
+def run():
+
+    Employee.objects.create(
+        first_name="Mike",
+        last_name="Vazovski",
+        job_title="Accountant",
+        salary=5000
+    )
+
+
+    emp = Employee.objects.first()
+    if emp:
+        emp.salary *= 2
+        emp.save()
+
+
+    print(Employee.objects.filter(job_title__icontains="software").count())
+
+    Employee.objects.filter(job_title="Accountant").delete()
+
+    print(list(Employee.objects.filter(salary__gt=6000).order_by("first_name")))
+
+    print(list(Employee.objects.filter(last_name__startswith="A")))
+
+    Employee.objects.filter(job_title="Manager").update(salary=F("salary") * 1.10)
+
+    print(list(Employee.objects.filter(salary__range=(3000, 7000))))
+
+    print(list(Employee.objects.values("job_title").annotate(count=Count("id"))))
+
+    Employee.objects.bulk_create([
+        Employee(first_name="John", last_name="Doe", job_title="Software Developer", salary= 60000),
+        Employee(first_name="Jane", last_name="Smith", job_title="Product Manager", salary= 75000),
+        Employee(first_name="Micheal", last_name="Johnson", job_title="UX Designer", salary= 65000),
+    ])
